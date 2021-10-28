@@ -1,6 +1,4 @@
-from functools import cached_property
 import time
-from tkinter.constants import S
 import webbrowser as wb
 import os
 import platform as pf
@@ -8,15 +6,17 @@ import schedule
 import threading
 
 class zoom():
-    started = False
-    def __init__(self,name:str,day:str,url:str,while_time:int,start_time:list,is_on):
+    def __init__(self,name:str,day:str or int,url:str,while_time:int,start_time:list or str,id=0,is_on=False):
         self.name = name
         self.day = self.getday(day)
         self.url = url
         self.while_time = while_time
-        self.start_time = start_time[0] + ':' + start_time[1]
+        if isinstance(start_time,list):
+            self.start_time = str(start_time[0] + ':' + start_time[1])
+        else:
+            self.start_time =start_time
         self.schedule = 0
-        self.id = 0
+        self.id = id
         if is_on == True:
             self.addschedule()
     
@@ -28,10 +28,6 @@ class zoom():
         pid = os.popen('pgrep zoom.us').read()
         if pid:
             os.system(f'kill {int(pid)}')
-        self.started = False
-    
-    def __del__(self):
-        self.cancel()
         
     def cancel(self):
         try:
@@ -94,11 +90,11 @@ def run_pending():
         def run(cls):
             while not runset.is_set():
                 schedule.run_pending()
+                print(schedule.get_jobs())
                 time.sleep(1)
     background = scheduleThread()
     background.start()
     return runset
-
 
 
     

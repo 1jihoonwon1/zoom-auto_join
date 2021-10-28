@@ -1,11 +1,9 @@
-from genericpath import getatime
 from tkinter import *
 from tkinter import ttk
 from backend import *
 import tkinter as tk
 from tkinter import messagebox
-
-
+import csv
 schedule_pending= 0
 def gettime(z:zoom):
     st = int(z.start_time[0])*60 +int(z.start_time[1])
@@ -15,50 +13,61 @@ def gettime(z:zoom):
 
 class schedule_list:
     def __init__(self):
-        self.scheduel_list =[]
+        self.scheduel_list = []
         self.order_list =[]
+        self.iid = 0
+        try:
+            self.get_schedule()
+        except:
+            pass
+            
+    def get_iid(self):
+        self.iid +=1
+        return self.iid
         
     def add(self,sche_info:list):
         z = zoom(*sche_info,is_on=is_on)
-        zoom_time = gettime(z)
-        index = self.add_index(z,zoom_time)
-        z.id = zoom_time
-        sche_info.append(zoom_time)
-        self.scheduel_list.insert(index,z)
-
-        # count = 0
-        # size = len(self.scheduel_list)
-        # for v in self.scheduel_list:
-        #     if  size < count:
-        #         mytree.insert("","end",iid=size,values=[])
-        #         size +=1
-        #     if index == count:
-        #         mytree.set
-        #     mytree.set(count-1,)
-        mytree.insert(parent="",index=index,values=sche_info,iid=zoom_time)
-        
-        
-    def add_index(self,zoo:zoom,zoom_time):
-        zoom_time = gettime(zoo)
-        self.order_list.append(zoom_time)
-        self.order_list.sort()
-        index = self.order_list.index(zoom_time)
-
-        return index
-        
+        t = self.gettime(z) + self.get_iid()
+        z.id = t
+        self.scheduel_list.append(z)
+        self.order_list.append(str(t))
+        sche_info.append(t)
+        mytree.insert('',"end",iid=self.iid,values=sche_info)
 
 
+    def gettime(self,z:zoom):
+
+        st = int(z.start_time[0])*60 +int(z.start_time[1])
+        zt = z.day*1500+st+z.while_time
+        return zt
+    def save_schedule(self):
+        f = open('a.csv','w',encoding='utf-8',newline='')
+        wr = csv.writer(f)
+        for line in self.scheduel_list:
+            l = [line.name,line.day,line.url,line.while_time,line.start_time,line.id]
+            wr.writerow(l)
+        f.close()
+    def get_schedule(self):
+        f = open('a.csv','r',encoding='utf-8')
+        rdr = csv.reader(f)
+        for line in rdr:
+            z = zoom(*line,is_on=False)
+            self.scheduel_list.append(z)
+            self.order_list.append(str(z.id))
+            mytree.insert('',"end",iid=self.iid,values=line)
+            self.iid +=1
 
         
         
-        
-sche = schedule_list()
+
+
 
 
             
 
 root = Tk()
 root.title('Azoom')
+
 
 class time_set(tk.Frame):
     def __init__(self, parent):
@@ -134,21 +143,16 @@ def click(event):
 def cut():
     global click_index
     if click_index:
-        print(click_index)
-        id  = mytree.item(click_index).get('values')
-        print(id)
+        getValue = mytree.item(click_index).get('values')
+        i = sche.order_list.index(str(getValue[5]))
+        del sche.order_list[i]
+        sche.scheduel_list[i].cancel()
+        del sche.scheduel_list[i]
+        mytree.delete(click_index)
+    else:
+        messagebox.showinfo('select index','Click the row you want to delete')
 
-        index = sche.order_list.index(id[5])
-        print(index)
-        print(sche.order_list)
-        print(sche.scheduel_list)
-        del sche.order_list[index]
-        del sche.scheduel_list[index]
-        print("-----------------")
-        print(sche.order_list)
-        print(sche.scheduel_list)
-        mytree.delete(id[5])
-        print(schedule.get_jobs())
+
 
 
 
@@ -192,6 +196,7 @@ onoff.grid(row=6,column=0,columnspan=2)
 
 mytree= ttk.Treeview(root)
 mytree['columns'] = ("name","day","url","while_time","start_time","select_id")
+
 mytree.column('#0', width=0, stretch=NO)
 mytree.column("name",width=150,anchor='center')
 mytree.column("day",width=50,anchor='center')
@@ -215,10 +220,16 @@ mytree.grid(row=0,column=0,columnspan=2,sticky='ew')
 mytree.bind('<ButtonRelease-1>',click)
 
 
+sche = schedule_list()
+
+
 def on_closing():
-    if messagebox.askokcancel("Quit", "Do you want to quit?"):
-        schedule_pending.set()
-        root.destroy()
+    if messagebox.askyesno("Quit", "Do you want to save?"):
+        sche.save_schedule()
+    schedule_pending.set()
+    root.destroy()
+
+
 
 root.protocol("WM_DELETE_WINDOW", on_closing)
 
