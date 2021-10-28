@@ -159,14 +159,13 @@ def cut():
         
 
     
-    
+
 
 
 b1 = Button(root, text='add',command=add)
-b3 = Button(root, text='del',command=cut)
+b2 = Button(root, text='del',command=cut)
 b1.grid(row=5, column=0,sticky='ew')
-b3.grid(row=5, column=1,sticky='ew')
-
+b2.grid(row=5, column=1,sticky='ew')
 
 on = PhotoImage(file=f'{os.path.dirname(__file__)}/on.png')
 off = PhotoImage(file=f'{os.path.dirname(__file__)}/off.png')
@@ -193,6 +192,8 @@ def switch():
 onoff = Button(root,image=off,bd=0,command=switch)
 onoff.grid(row=6,column=0,columnspan=2)
 
+
+    
 
 mytree= ttk.Treeview(root)
 mytree['columns'] = ("name","day","url","while_time","start_time","select_id")
@@ -235,3 +236,4 @@ root.protocol("WM_DELETE_WINDOW", on_closing)
 
 
 root.mainloop()
+
