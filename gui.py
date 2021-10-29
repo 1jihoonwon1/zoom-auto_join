@@ -4,6 +4,7 @@ from backend import *
 import tkinter as tk
 from tkinter import messagebox
 import csv
+import sys
 schedule_pending= 0
 def gettime(z:zoom):
     st = int(z.start_time[0])*60 +int(z.start_time[1])
@@ -157,9 +158,12 @@ def cut():
 
 
         
+file = 0
 
-    
-
+if getattr(sys, 'frozen', False):
+    file = sys._MEIPASS
+else:
+    file = os.path.dirname(os.path.abspath(__file__))
 
 
 b1 = Button(root, text='add',command=add)
@@ -167,8 +171,8 @@ b2 = Button(root, text='del',command=cut)
 b1.grid(row=5, column=0,sticky='ew')
 b2.grid(row=5, column=1,sticky='ew')
 
-on = PhotoImage(file=f'{os.path.dirname(__file__)}/on.png')
-off = PhotoImage(file=f'{os.path.dirname(__file__)}/off.png')
+on = PhotoImage(file=file+'/on.png')
+off = PhotoImage(file=file+'/off.png')
 
 is_on = False
 schedule_pending = run_pending()
