@@ -107,7 +107,7 @@ def  add():
         "Tue.",
         "Wed.",
         "Thu.",
-        "Fri",
+        "Fri.",
         "Sat."
     ],state="readonly")
     combobox.current(0)
