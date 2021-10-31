@@ -5,10 +5,20 @@ import tkinter as tk
 from tkinter import messagebox
 import csv
 import sys
-schedule_pending= 0
 def gettime(z:zoom):
-    st = int(z.start_time[0])*60 +int(z.start_time[1])
-    zt = z.day*1500+st+z.while_time
+    st = list(z.start_time.split(':'))
+    st = int(st[0])*60 + int(st[1])
+    dayint = {
+        "every.":0,
+        "Sun.":1,
+        "Mon.":2,
+        "Tue.":3,
+        "Wed.":4,
+        "Thu.":5,
+        "Fri.":6,
+        "Sat.":7
+    }
+    zt = dayint[z.day]*1500+st+z.while_time
     return zt
 
 def get_path():
@@ -127,17 +137,7 @@ def  add():
             messagebox.showinfo('while_time error','"while time" is not integer')
         s = [timeset.hourstr.get().zfill(2),timeset.minstr.get().zfill(2)]
         s = str(s[0] + ':' + s[1])
-        day ={
-        "every.":0,
-        "Sun.":1,
-        "Mon.":2,
-        "Tue.":3,
-        "Wed.":4,
-        "Thu.":5,
-        "Fri.":6,
-        "Sat.":7
-        }
-        sche_info =[name.get(),day[combobox.get()],url.get(),w,s]
+        sche_info =[name.get(),combobox.get(),url.get(),w,s]
         sche.add(sche_info)
         popup.destroy()
         
@@ -199,7 +199,7 @@ def switch():
             i.cancel()
     else:
         for i in sche.scheduel_list:
-            i.addschedule()
+            i.add_schedule()
         onoff.config(image = on)
         is_on = True
 
@@ -251,4 +251,3 @@ root.protocol("WM_DELETE_WINDOW", on_closing)
 
 
 root.mainloop()
-
