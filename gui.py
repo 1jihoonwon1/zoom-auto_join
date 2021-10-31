@@ -11,7 +11,14 @@ def gettime(z:zoom):
     zt = z.day*1500+st+z.while_time
     return zt
 
-
+def get_path():
+    if hasattr(sys, "_MEIPASS"):
+        abs_home = os.path.abspath(os.path.expanduser("~"))
+        abs_app = os.path.join(abs_home,"schedule_file.csv")
+        file = abs_app
+    else:
+        file = os.path.dirname(os.path.abspath(__file__)) +'/schedule_file.csv'
+    return file
 class schedule_list:
     def __init__(self):
         self.scheduel_list = []
@@ -28,28 +35,22 @@ class schedule_list:
         
     def add(self,sche_info:list):
         z = zoom(*sche_info,is_on=is_on)
-        t = self.gettime(z) + self.get_iid()
+        t = gettime(z) + self.get_iid()
         z.id = t
         self.scheduel_list.append(z)
         self.order_list.append(str(t))
         sche_info.append(t)
         mytree.insert('',"end",iid=self.iid,values=sche_info)
 
-
-    def gettime(self,z:zoom):
-
-        st = int(z.start_time[0])*60 +int(z.start_time[1])
-        zt = z.day*1500+st+z.while_time
-        return zt
     def save_schedule(self):
-        f = open('a.csv','w',encoding='utf-8',newline='')
+        f = open(get_path(),'w',encoding='utf-8',newline='')
         wr = csv.writer(f)
         for line in self.scheduel_list:
             l = [line.name,line.day,line.url,line.while_time,line.start_time,line.id]
             wr.writerow(l)
         f.close()
     def get_schedule(self):
-        f = open('a.csv','r',encoding='utf-8')
+        f = open(get_path(),'r',encoding='utf-8')
         rdr = csv.reader(f)
         for line in rdr:
             z = zoom(*line,is_on=False)
@@ -125,8 +126,18 @@ def  add():
         except:
             messagebox.showinfo('while_time error','"while time" is not integer')
         s = [timeset.hourstr.get().zfill(2),timeset.minstr.get().zfill(2)]
-
-        sche_info =[name.get(),combobox.get(),url.get(),w,s]
+        s = str(s[0] + ':' + s[1])
+        day ={
+        "every.":0,
+        "Sun.":1,
+        "Mon.":2,
+        "Tue.":3,
+        "Wed.":4,
+        "Thu.":5,
+        "Fri.":6,
+        "Sat.":7
+        }
+        sche_info =[name.get(),day[combobox.get()],url.get(),w,s]
         sche.add(sche_info)
         popup.destroy()
         
