@@ -23,7 +23,6 @@ class zoom():
         if pf.system()=='Windows':
             os.system('taskkill /f /im zoom.us')
         else:
-            print('ok')
             os.system('killall -9 zoom.us')
     def cancel(self):
         try:
@@ -65,7 +64,6 @@ def run_pending():
     class scheduleThread(threading.Thread):
         def run(cls):
             while not runset.is_set():
-                print(schedule.idle_seconds())
                 schedule.run_pending()
                 time.sleep(1)
     background = scheduleThread()
