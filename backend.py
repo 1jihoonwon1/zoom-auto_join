@@ -4,7 +4,6 @@ import os
 import platform as pf
 import schedule 
 import threading
-import asyncio
 class zoom():
     def __init__(self,name:str,day:int,url:str,while_time:int,start_time:str,id=0,is_on=False):
         self.name = name
